@@ -8,8 +8,12 @@ services:
       - "9000:9000"
     networks:
       - sonarnet
+    environment:
+      - sonar.jdbc.url=jdbc:postgresql://db:5432/sonar
+      - sonar.jdbc.username=sonar
+      - sonar.jdbc.password=sonar
     volumes:
-      - /Users/nakama/sonar-conf:/opt/sonarqube/conf
+      - {$APP_PATH}/sonar-conf:/opt/sonarqube/conf
   
   sonarqube2:
     container_name: sonarqube2
@@ -24,9 +28,8 @@ services:
       - sonar.jdbc.password=sonar
       - sonar.web.port=9090
     volumes:
-      - /Users/nakama/sonar-conf:/opt/sonarqube/conf
+      - {$APP_PATH}/sonar-conf:/opt/sonarqube/conf
     
-
   db:
     container_name: postgres
     image: postgres
@@ -38,7 +41,31 @@ services:
       - POSTGRES_USER=sonar
       - POSTGRES_PASSWORD=sonar
       - POSTGRES_DB=sonar
-  
+    volumes:
+      - /Users/nakama/sqldump:/sqldump
+
+  pgadmin:
+    container_name: pg_admin
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+    ports:
+      - "80:80"
+    networks: 
+      - sonarnet
+
+  elasticsearch:
+    container_name: elastic
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.3.1
+    tty: true
+    ports:
+      - "9200:9200"
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m -XX:+HeapDumpOnOutOfMemoryError"
+    networks:
+      - sonarnet
 
 networks:
   sonarnet:
