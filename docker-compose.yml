@@ -13,7 +13,7 @@ services:
       - sonar.jdbc.username=sonar
       - sonar.jdbc.password=sonar
     volumes:
-      - {$APP_PATH}/sonar-conf:/opt/sonarqube/conf
+      - ${APP_PATH}/sonar-conf:/opt/sonarqube/conf
   
   sonarqube2:
     container_name: sonarqube2
@@ -28,7 +28,7 @@ services:
       - sonar.jdbc.password=sonar
       - sonar.web.port=9090
     volumes:
-      - {$APP_PATH}/sonar-conf:/opt/sonarqube/conf
+      - ${APP_PATH}/sonar-conf:/opt/sonarqube/conf
     
   db:
     container_name: postgres
